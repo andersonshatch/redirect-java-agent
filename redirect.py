@@ -1,6 +1,7 @@
 from pathlib import Path
 import requests
 from requests.adapters import HTTPAdapter, Retry
+import os
 
 session = requests.Session()
 retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
@@ -21,7 +22,11 @@ versions = []
 while versions_count == -1 or len(versions) < versions_count:
     MAVEN_SEARCH_PARAMS["start"] = str(len(versions))
     print("paging", MAVEN_SEARCH_URL, MAVEN_SEARCH_PARAMS)
-    response = session.get(MAVEN_SEARCH_URL, params=MAVEN_SEARCH_PARAMS)
+    response = session.get(
+        MAVEN_SEARCH_URL,
+        params=MAVEN_SEARCH_PARAMS,
+        timeout=float(os.environ.get("REQUEST_TIMEOUT", 5)),
+    )
     response_json = response.json()
     versions_count = response_json["response"]["numFound"]
     versions.extend(response_json["response"]["docs"])
