@@ -1,5 +1,10 @@
 from pathlib import Path
 import requests
+from requests.adapters import HTTPAdapter, Retry
+
+session = requests.Session()
+retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
+session.mount("https://", HTTPAdapter(max_retries=retries))
 
 MAVEN_SEARCH_URL = "https://search.maven.org/solrsearch/select"
 MAVEN_SEARCH_PARAMS = {
@@ -16,7 +21,7 @@ versions = []
 while versions_count == -1 or len(versions) < versions_count:
     MAVEN_SEARCH_PARAMS["start"] = str(len(versions))
     print("paging", MAVEN_SEARCH_URL, MAVEN_SEARCH_PARAMS)
-    response = requests.get(MAVEN_SEARCH_URL, MAVEN_SEARCH_PARAMS)
+    response = session.get(MAVEN_SEARCH_URL, params=MAVEN_SEARCH_PARAMS)
     response_json = response.json()
     versions_count = response_json["response"]["numFound"]
     versions.extend(response_json["response"]["docs"])
