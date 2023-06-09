@@ -7,6 +7,8 @@ session = requests.Session()
 retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
 session.mount("https://", HTTPAdapter(max_retries=retries))
 
+REDIRECT_PREFIX = os.environ.get("REDIRECT_PREFIX", "")
+
 MAVEN_SEARCH_URL = "https://search.maven.org/solrsearch/select"
 MAVEN_SEARCH_PARAMS = {
     "q": "g:com.contrastsecurity a:contrast-agent",
@@ -46,7 +48,7 @@ output_dir.mkdir(exist_ok=True)
 output_file = output_dir / Path("_redirects")
 
 lines = []
-lines.append(f"latest\t{latest_version_url}")
+lines.append(f"{REDIRECT_PREFIX}latest\t{latest_version_url}")
 print(f"selecting latest as {latest_version}")
 
 
@@ -58,7 +60,7 @@ for version_data in versions:
     if major not in latest_major_versions:
         version = version_data["v"]
         latest_major_versions[major] = version
-        lines.append(f"{major}\t{maven_download_url(version)}")
+        lines.append(f"{REDIRECT_PREFIX}{major}\t{maven_download_url(version)}")
         print(f"selecting latest of v{major} as {version}")
 
 

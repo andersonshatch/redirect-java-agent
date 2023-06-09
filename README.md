@@ -24,3 +24,9 @@ latest	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/cont
 
 1. `pip install -r requirements.txt`
 1. `python redirect.py`
+
+## Configuration
+
+The following environment variables control behaviour:
+- `REQUEST_TIMEOUT` - time in seconds that requests should timeout after. Default `5`.
+- `REDIRECT_PREFIX` - string to prepend before `latest`/major version in the output. Default "" (empty string).
