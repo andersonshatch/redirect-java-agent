@@ -63,3 +63,6 @@ for version_data in versions:
 
 
 output_file.write_text("\n".join(lines))
+
+print("_redirects file contents:")
+print(output_file.read_text())
