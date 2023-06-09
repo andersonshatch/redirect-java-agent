@@ -2,19 +2,19 @@ from pathlib import Path
 import requests
 
 MAVEN_SEARCH_URL = "https://search.maven.org/solrsearch/select"
-MAVEN_SEARCH_PARAMS = [
-    ("q", "g:com.contrastsecurity a:contrast-agent"),
-    ("wt", "json"),
-    ("core", "gav"),
-    ("rows", "20"),
-    ("start", "0"),
-]
+MAVEN_SEARCH_PARAMS = {
+    "q": "g:com.contrastsecurity a:contrast-agent",
+    "wt": "json",
+    "core": "gav",
+    "rows": "20",
+    "start": "0",
+}
 
 versions_count = -1
 versions = []
 
 while versions_count == -1 or len(versions) < versions_count:
-    MAVEN_SEARCH_PARAMS[-1] = ("start", str(len(versions)))
+    MAVEN_SEARCH_PARAMS["start"] = str(len(versions))
     print("paging", MAVEN_SEARCH_URL, MAVEN_SEARCH_PARAMS)
     response = requests.get(MAVEN_SEARCH_URL, MAVEN_SEARCH_PARAMS)
     response_json = response.json()
@@ -46,6 +46,7 @@ for version_data in versions:
     version = version_data["v"]
     major = version.split(".")[0]
     if major not in latest_major_versions:
+        version = version_data["v"]
         latest_major_versions[major] = version
         lines.append(f"{major}\t{maven_download_url(version)}")
         print(f"selecting latest of v{major} as {version}")
