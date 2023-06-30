@@ -30,6 +30,9 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Build redirects
         run: python redirect.py
+        env:
+          VERSIONS_OVERRIDE: ${{ vars.VERSIONS_OVERRIDE }}
+          REDIRECT_PREFIX: /
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
