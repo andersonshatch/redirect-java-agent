@@ -18,6 +18,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.4
+        with:
+          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
+          python-version: 3.8
+          # Used to specify a package manager for caching in the default directory. Supported values: pip, pipenv, poetry.
+          cache: pip
+          # Used to specify the path to dependency files. Supports wildcards or a list of file names for caching multiple dependencies.
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Build redirects
+        run: python redirect.py
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -27,9 +39,10 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "/" # App source code path
+          app_location: "/publish" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "publish" # Built app content directory - optional
+          output_location: ""
+          skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
