@@ -10,31 +10,16 @@ on:
       - azure-static-site
 
 jobs:
-  build_and_deploy_job:
+  deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Deploy Job
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Setup Python
-        uses: actions/setup-python@v3.1.4
-        with:
-          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-          python-version: 3.8
-          # Used to specify a package manager for caching in the default directory. Supported values: pip, pipenv, poetry.
-          cache: pip
-          # Used to specify the path to dependency files. Supports wildcards or a list of file names for caching multiple dependencies.
-          cache-dependency-path: requirements.txt
-      - run: pip install -r requirements.txt
-      - name: Build redirects
-        run: python redirect.py
-        env:
-          VERSIONS_OVERRIDE: ${{ vars.VERSIONS_OVERRIDE }}
-          REDIRECT_PREFIX: /
-      - name: Build And Deploy
-        id: builddeploy
+      - name: Deploy
+        id: deploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AMBITIOUS_DESERT_027443410 }}
