@@ -8,7 +8,7 @@ on:
 jobs:
   update_json_redirects:
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
     name: Update redirects in staticwebapp.config.json
     runs-on: ubuntu-latest
@@ -28,13 +28,12 @@ jobs:
         run: python redirect.py
         env:
           NEW_VERSION_URL: "${{ github.event.inputs.new_version_url }}"
-      - name: Switch branch
-        run: git checkout -b $(date -I)
-      - name: Set author information
-        run: git config --global user.email "${{ github.actor }}@users.noreply.github.com" && git config --global user.name "${{ github.actor }}"
-      - name: Commit changes
-        run: git commit publish/ -m "Update redirects"
-      - name: create pull request
-        run: "gh pr create -B azure-static-site -H $(date -I) --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'"
+      - name: Commit changes and open PR
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com" && git config --global user.name "${{ github.actor }}"
+          git checkout -b $(date -I)
+          git commit publish/ -m "Update redirects"
+          git push "https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $(date -I)
+          gh pr create -B azure-static-site -H $(date -I) --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
