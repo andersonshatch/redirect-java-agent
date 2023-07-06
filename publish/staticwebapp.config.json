@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/staticwebapp.config.json",
+  "globalHeaders": {
+    "Content-Type": "text/html; charset=UTF-8",
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Embedder-Policy": "require-corp",
+    "Cross-Origin-Resource-Policy": "same-site",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "0"
+  },
+  "routes": [
+    {
+      "route": "latest",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.1.2/contrast-agent-5.1.2.jar",
+      "statusCode": 302
+    },
+    {
+      "route": "5",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.1.2/contrast-agent-5.1.2.jar",
+      "statusCode": 302
+    },
+    {
+      "route": "4",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/4.13.1/contrast-agent-4.13.1.jar",
+      "statusCode": 302
+    },
+    {
+      "route": "3",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/3.3.5/contrast-agent-3.3.5.jar",
+      "statusCode": 302
+    }
+  ]
+}
