@@ -29,7 +29,7 @@
     },
     {
       "route": "3",
-      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/3.3.5/contrast-agent-3.3.5.jar",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/3.18.2/contrast-agent-3.18.2.jar",
       "statusCode": 302
     }
   ]
