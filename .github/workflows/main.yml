@@ -1,0 +1,47 @@
+name: Update redirects with new URL
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version_url:
+        description: URL to the new Java agent version
+        required: true
+        type: string
+  repository_dispatch:
+    types:
+      - new-version
+
+jobs:
+  update_json_redirects:
+    permissions:
+      contents: write
+      pull-requests: write
+    name: Update redirects in staticwebapp.config.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.4
+        with:
+          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
+          python-version: "3.11"
+          # Used to specify a package manager for caching in the default directory. Supported values: pip, pipenv, poetry.
+          cache: pip
+          # Used to specify the path to dependency files. Supports wildcards or a list of file names for caching multiple dependencies.
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Build redirects
+        run: python redirect.py
+        env:
+          NEW_VERSION_URL: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.new_version_url || github.event.client_payload.new_version_url }}"
+      - name: Commit changes and open PR
+        run: |
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com" && git config --global user.name "${{ github.actor }}"
+          branch=$(date "+%Y-%m-%d--%H-%M-%S")
+          git checkout -b $branch
+          git commit publish/ -m "Update redirects"
+          git push "https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $branch
+          gh pr create -B main -H $branch --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
+        env:
+          # Use repo scoped PAT so subsequent checks are triggered by this push, this would not happen with the default provided GITHUB_TOKEN (https://github.com/peter-evans/create-pull-request/issues/48)
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
