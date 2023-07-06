@@ -1,39 +1,35 @@
 on:
-  push:
-    branches:
-    - main
-    - release/*
-  schedule:
-    - cron: "0 0,6,12,18 * * 1-5"
   workflow_dispatch:
-permissions:
-  contents: read
-  deployments: write
+    inputs:
+      new_version_url:
+        description: URL to the new Java agent version
+        required: true
+        type: string
 jobs:
-  publish_cloudflare_pages:
-    name: publish to cloudflare pages
+  update_json_redirects:
+    name: Update redirects in staticwebapp.config.json
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup Python
-      uses: actions/setup-python@v3.1.4
-      with:
-        # Version range or exact version of a Python version to use, using SemVer's version range syntax.
-        python-version: 3.8
-        # Used to specify a package manager for caching in the default directory. Supported values: pip, pipenv, poetry.
-        cache: pip
-        # Used to specify the path to dependency files. Supports wildcards or a list of file names for caching multiple dependencies.
-        cache-dependency-path: requirements.txt
-    - run: pip install -r requirements.txt
-    - name: Build redirects
-      run: python redirect.py
-    - name: Publish to Cloudflare Pages
-      uses: cloudflare/pages-action@v1
-      with:
-        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        accountId: b2876a2ba16656468a83fb345faf98c4
-        projectName: redir-java-agent
-        directory: publish
-        branch: ${{ github.ref_name }}
-        # Optional: Enable this if you want to have GitHub Deployments triggered
-        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v1
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.4
+        with:
+          # Version range or exact version of a Python version to use, using SemVer's version range syntax.
+          python-version: 3.10
+          # Used to specify a package manager for caching in the default directory. Supported values: pip, pipenv, poetry.
+          cache: pip
+          # Used to specify the path to dependency files. Supports wildcards or a list of file names for caching multiple dependencies.
+          cache-dependency-path: requirements.txt
+      - run: pip install -r requirements.txt
+      - name: Build redirects
+        run: python redirect.py
+        env:
+          NEW_VERSION_URL: "${{ github.event.inputs.new_version_url }}"
+      - name: Switch branch
+        run: git checkout -b $(date -I)
+      - name: Commit changes
+        run: git commit publish/ -m "Update redirects"
+      - name: create pull request
+        run: "gh pr create -B azure-static-site -H $(date -I) --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
