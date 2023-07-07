@@ -39,6 +39,6 @@ jobs:
           git checkout -b $branch
           git commit publish/ -m "Update redirects"
           git push "https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $branch
-          gh pr create -B azure-static-site -H $branch --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
+          gh pr create -B main -H $branch --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
