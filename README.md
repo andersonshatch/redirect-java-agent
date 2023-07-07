@@ -1,32 +1,32 @@
 # Redirect to Contrast Java Agent
 
-Utility script to query Maven Central for versions of `com.contrastsecurity:contrast-agent`, generating a `_redirects` file to the latest of all versions, plus latest of major versions. 
+Utility script to update Azure Static Web App site redirects to the very latest and latest major versions of `com.contrastsecurity:contrast-agent` on Maven Central.
 
-The generated `_redirects` file is supported by Netlify, Cloudflare Pages, and probably others.
-
-## Example output
-
-```
-latest	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/5.1.0/contrast-agent-5.1.0.jar
-5	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/5.1.0/contrast-agent-5.1.0.jar
-4	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/4.13.1/contrast-agent-4.13.1.jar
-3	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/3.18.2/contrast-agent-3.18.2.jar
-2	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/2.13.2/contrast-agent-2.13.2.jar
-1	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/1.0/contrast-agent-1.0.jar
-0	https://search.maven.org/remotecontent?filepath=com/contrastsecurity/contrast-agent/0.6/contrast-agent-0.6.jar
-```
+Files in the `publish` directory are made available on the deployed site.
 
 ## Requirements
 
-- Python 3.8 or newer
+- Python 3.11 or newer
 
 ## Usage
 
+### Inputs
+
+The script reads in an environment variable `NEW_VERSION_URL`.
+The value of this environment variable should be the full URL to the download of that version of contrast-agent, e.g. https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.1.2/contrast-agent-5.1.2.jar
+
+The version is extracted from the first path segment containing a version string; in the above example, from `/5.1.2/`.
+This version is checked against existing redirects to versions in `staticwebapp.config.json`.
+If a redirect is already present for major version 5, that destination is replaced with the new URL. Else, a new major version redirect will be added to the list.
+If the major version to be updated is the current latest major version, or a new major version, the `latest` redirect destination will also be updated to the new URL.
+
+
+### GitHub Action
+
+The GitHub Action workflow `main.yml` takes in a `new_version_url` input from either manual trigger (via GitHub UI/API), or via repository_dispatch event from another repository.
+This version input is used to update the redirects in `staticwebapp.config.json`, and a PR is then opened so the changes can be reviewed. When the PR is merged, the deployment is triggered.
+
+### Local testing / development
+
 1. `pip install -r requirements.txt`
-1. `python redirect.py`
-
-## Configuration
-
-The following environment variables control behaviour:
-- `REQUEST_TIMEOUT` - time in seconds that requests should timeout after. Default `5`.
-- `REDIRECT_PREFIX` - string to prepend before `latest`/major version in the output. Default "" (empty string).
+1. `NEW_VERSION_URL=https://new-version-url/111.222.333/contrast-agent-111.222.333.jar python redirect.py`
