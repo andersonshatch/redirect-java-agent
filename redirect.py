@@ -105,3 +105,12 @@ output_file.write_text(json_dumps(config, indent=2))
 # Print file contents to stdout
 print("file contents:")
 print(output_file.read_text())
+
+html_output_file = output_dir / Path("index.html")
+lines = [
+    "This site hosts redirects to the Contrast Security Java Agent. The following links are available:"
+]
+
+for version in new_routes:
+    lines.append(f'<a href="{version["route"]}">{version["route"]}</a>')
+html_output_file.write_text("<br />\n".join(lines))
