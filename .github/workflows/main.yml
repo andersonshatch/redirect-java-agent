@@ -5,6 +5,10 @@ on:
         description: URL to the new Java agent version
         required: true
         type: string
+  repository_dispatch:
+    types:
+      - new-version
+
 jobs:
   update_json_redirects:
     permissions:
@@ -27,13 +31,14 @@ jobs:
       - name: Build redirects
         run: python redirect.py
         env:
-          NEW_VERSION_URL: "${{ github.event.inputs.new_version_url }}"
+          NEW_VERSION_URL: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.new_version_url || github.event.client_payload.new_version_url }}"
       - name: Commit changes and open PR
         run: |
           git config --global user.email "${{ github.actor }}@users.noreply.github.com" && git config --global user.name "${{ github.actor }}"
-          git checkout -b $(date -I)
+          branch=$(date "+%Y-%m-%d--%H-%M-%S")
+          git checkout -b $branch
           git commit publish/ -m "Update redirects"
-          git push "https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $(date -I)
-          gh pr create -B azure-static-site -H $(date -I) --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
+          git push "https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $branch
+          gh pr create -B azure-static-site -H $branch --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
