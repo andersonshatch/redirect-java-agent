@@ -38,7 +38,8 @@ jobs:
           branch=$(date "+%Y-%m-%d--%H-%M-%S")
           git checkout -b $branch
           git commit publish/ -m "Update redirects"
-          git push "https://${{ github.actor }}:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $branch
+          git push "https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" $branch
           gh pr create -B main -H $branch --title 'Update redirects' --body 'New URL given: ${{ github.event.inputs.new_version_url }}'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Use repo scoped PAT so subsequent checks are triggered by this push, this would not happen with the default provided GITHUB_TOKEN (https://github.com/peter-evans/create-pull-request/issues/48)
+          GITHUB_TOKEN: ${{ secrets.REPO_SCOPED_TOKEN }}
