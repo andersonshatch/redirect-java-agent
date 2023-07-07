@@ -1,3 +1,5 @@
+name: Update redirects with new URL
+
 on:
   workflow_dispatch:
     inputs:
