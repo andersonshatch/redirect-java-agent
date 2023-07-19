@@ -107,10 +107,16 @@ print("file contents:")
 print(output_file.read_text())
 
 html_output_file = output_dir / Path("index.html")
+support_kb_link = "https://support.contrastsecurity.com/hc/en-us/articles/360043991071-Downloading-Contrast-agents-via-CURL"
 lines = [
-    "This site hosts redirects to the Contrast Security Java Agent. The following links are available:"
+    f'<head><meta http-equiv="refresh" content="10; url={support_kb_link}" /></head>',
+    "This site hosts redirects to the Contrast Security Java Agent. The following links are available:",
 ]
 
 for version in new_routes:
     lines.append(f'<a href="{version["route"]}">{version["route"]}</a>')
+
+lines.append(
+    f'You will shortly be redirected to the Contrast Support Portal - <a href="{support_kb_link}">{support_kb_link}</a>'
+)
 html_output_file.write_text("<br />\n".join(lines))
