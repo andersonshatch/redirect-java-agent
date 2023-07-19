@@ -14,12 +14,12 @@
   "routes": [
     {
       "route": "latest",
-      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.1.2/contrast-agent-5.1.2.jar",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.2.0/contrast-agent-5.2.0.jar",
       "statusCode": 302
     },
     {
       "route": "5",
-      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.1.2/contrast-agent-5.1.2.jar",
+      "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/5.2.0/contrast-agent-5.2.0.jar",
       "statusCode": 302
     },
     {
