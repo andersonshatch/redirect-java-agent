@@ -32,5 +32,23 @@
       "redirect": "https://repo1.maven.org/maven2/com/contrastsecurity/contrast-agent/3.3.5/contrast-agent-3.3.5.jar",
       "statusCode": 302
     }
-  ]
+  ],
+  "responseOverrides": {
+    "400": {
+      "statusCode": 302,
+      "redirect": "/"
+    },
+    "401": {
+      "statusCode": 302,
+      "redirect": "/"
+    },
+    "403": {
+      "statusCode": 302,
+      "redirect": "/"
+    },
+    "404": {
+      "statusCode": 302,
+      "redirect": "/"
+    }
+  }
 }
